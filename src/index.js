@@ -22,9 +22,17 @@ const initialState = { value: 10 };
 const INCREMENT = "INCREMENT";
 const incrementAction = { type: INCREMENT };
 
+//action creators
+const ADD = "ADD";
+const add = (amount) => ({ type: ADD, payload: amount });
+
 const reducer = (state, action) => {
   if (action.type === INCREMENT) {
-    return { state: state.value + 1 };
+    return { value: state.value + 1 };
+  }
+
+  if (action.type === ADD) {
+    return { value: state.value + action.payload };
   }
   return state;
 };
