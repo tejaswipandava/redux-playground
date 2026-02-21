@@ -15,8 +15,6 @@ import {
 // console.log(mutant("hello"));
 // console.log(composedmutant("jaffa"));
 
-
-//redux store, reducer----------------------------------------
 const initialState = { value: 10 };
 
 const INCREMENT = "INCREMENT";
@@ -24,9 +22,10 @@ const incrementAction = { type: INCREMENT };
 
 //action creators
 const ADD = "ADD";
-const add = (amount) => ({ type: ADD, payload: amount });
+const addActionCreator = (amount) => ({ type: ADD, payload: amount });
 
-const reducer = (state, action) => {
+//pass initial state here
+const reducer = (state = initialState, action) => {
   if (action.type === INCREMENT) {
     return { value: state.value + 1 };
   }
@@ -37,6 +36,14 @@ const reducer = (state, action) => {
   return state;
 };
 
+//pass initial state here is also possible
+// const store = createStore(reducer,initialState);
 const store = createStore(reducer);
 
-console.log(store);
+//call the dispatcher to take the action
+store.dispatch(incrementAction);
+//get the updated state here
+console.log(store.getState());
+
+store.dispatch(addActionCreator(10));
+console.log(store.getState());
