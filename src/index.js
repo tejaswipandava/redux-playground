@@ -40,10 +40,11 @@ const reducer = (state = initialState, action) => {
 // const store = createStore(reducer,initialState);
 const store = createStore(reducer);
 
-//call the dispatcher to take the action
-store.dispatch(incrementAction);
-//get the updated state here
-console.log(store.getState());
+const subscriber = () =>
+  console.log("SUBSCRIBE to the store state", store.getState());
+store.subscribe(subscriber);
 
-store.dispatch(addActionCreator(10));
-console.log(store.getState());
+store.dispatch(incrementAction);
+store.dispatch(addActionCreator(100));
+
+console.log(store);
