@@ -18,7 +18,9 @@ import {
 const initialState = { value: 10 };
 
 const INCREMENT = "INCREMENT";
-const incrementAction = { type: INCREMENT };
+const incrementAction = () => ({
+  type: INCREMENT,
+});
 
 //action creators
 const ADD = "ADD";
@@ -42,9 +44,14 @@ const store = createStore(reducer);
 
 const subscriber = () =>
   console.log("SUBSCRIBE to the store state", store.getState());
+
 store.subscribe(subscriber);
 
-store.dispatch(incrementAction);
-store.dispatch(addActionCreator(100));
+const actionbinder = bindActionCreators(
+  { incrementAction, addActionCreator },
+  store.dispatch
+);
 
+actionbinder.addActionCreator(100);
+actionbinder.incrementAction();
 console.log(store);
