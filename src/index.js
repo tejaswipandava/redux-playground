@@ -5,53 +5,37 @@ import {
   bindActionCreators,
 } from "redux";
 
-// const toUpper = (string) => string.toUpperCase();
-// const toRepeat = (string) => string.repeat(3);
-// const toBold = (string) => string.bold();
+const initialState = {
+  users: [
+    { id: 1, name: "teja" },
+    { id: 2, name: "devour" },
+  ],
+  tasks: [{ title: "Apply the skill" }, { title: "consume everything" }],
+};
 
-// const mutant = (string) => toBold(toRepeat(toUpper(string)));
-// const composedmutant = compose(toBold, toRepeat, toUpper);
+const USERS = "users";
+const TASKS = "tasks";
 
-// console.log(mutant("hello"));
-// console.log(composedmutant("jaffa"));
-
-const initialState = { value: 10 };
-
-const INCREMENT = "INCREMENT";
-const incrementAction = () => ({
-  type: INCREMENT,
+const userAction = (id, name) => ({
+  type: USERS,
+  payload: { id: id, name: name },
+});
+const taskAction = (task) => ({
+  type: TASKS,
+  payload: { title: task },
 });
 
-//action creators
-const ADD = "ADD";
-const addActionCreator = (amount) => ({ type: ADD, payload: amount });
-
-//pass initial state here
 const reducer = (state = initialState, action) => {
-  if (action.type === INCREMENT) {
-    return { value: state.value + 1 };
+  if (action.type === USERS) {
+    return { ...state, users: [...state.users, action.payload] };
   }
-
-  if (action.type === ADD) {
-    return { value: state.value + action.payload };
+  if (action.type === TASKS) {
+    return { ...state, tasks: [...state.tasks, action.payload] };
   }
   return state;
 };
 
-//pass initial state here is also possible
-// const store = createStore(reducer,initialState);
 const store = createStore(reducer);
-
-const subscriber = () =>
-  console.log("SUBSCRIBE to the store state", store.getState());
-
-store.subscribe(subscriber);
-
-const actionbinder = bindActionCreators(
-  { incrementAction, addActionCreator },
-  store.dispatch
-);
-
-actionbinder.addActionCreator(100);
-actionbinder.incrementAction();
-console.log(store);
+store.dispatch(userAction(3, "crome"));
+store.dispatch(taskAction("nothing here"));
+console.log(store.getState());
