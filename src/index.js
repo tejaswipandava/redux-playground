@@ -3,8 +3,10 @@ import {
   compose,
   applyMiddleware,
   bindActionCreators,
+  combineReducers,
 } from "redux";
 
+//state
 const initialState = {
   users: [
     { id: 1, name: "teja" },
@@ -13,6 +15,7 @@ const initialState = {
   tasks: [{ title: "Apply the skill" }, { title: "consume everything" }],
 };
 
+//actions
 const USERS = "users";
 const TASKS = "tasks";
 
@@ -25,17 +28,44 @@ const taskAction = (task) => ({
   payload: { title: task },
 });
 
-const reducer = (state = initialState, action) => {
+//reducers
+const userReducer = (users = initialState.users, action) => {
   if (action.type === USERS) {
-    return { ...state, users: [...state.users, action.payload] };
+    return [...users, action.payload];
   }
+
+  return users;
+};
+const taskReducer = (tasks = initialState.tasks, action) => {
   if (action.type === TASKS) {
-    return { ...state, tasks: [...state.tasks, action.payload] };
+    return [...tasks, action.payload];
   }
-  return state;
+  return tasks;
 };
 
-const store = createStore(reducer);
+//combinator
+const combineReducer = combineReducers({
+  users: userReducer,
+  tasks: taskReducer,
+});
+
+//store
+const store = createStore(combineReducer);
+
+//subscribe
+const subscriber = () => {
+  console.log("Subscribe", store.getState());
+};
+store.subscribe(subscriber);
+
+//action invoke
 store.dispatch(userAction(3, "crome"));
 store.dispatch(taskAction("nothing here"));
-console.log(store.getState());
+
+//actionbinder
+const actionBinder = bindActionCreators(
+  { userAction, taskAction },
+  store.dispatch
+);
+actionBinder.userAction(4, "zen");
+actionBinder.taskAction("actionBinders");
