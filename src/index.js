@@ -6,66 +6,39 @@ import {
   combineReducers,
 } from "redux";
 
-//state
-const initialState = {
-  users: [
-    { id: 1, name: "teja" },
-    { id: 2, name: "devour" },
-  ],
-  tasks: [{ title: "Apply the skill" }, { title: "consume everything" }],
+const reducer = (state) => state;
+
+const monitorEnhancer = (createStore) => (reducer, initialState, enhance) => {
+  const monitorReducer = (state, action) => {
+    const start = performance.now();
+    const newState = reducer(state, action);
+    const end = performance.now();
+    const diff = end - start;
+    console.log("difference in time", diff);
+
+    return newState;
+  };
+
+  return createStore(monitorReducer, initialState, enhance);
 };
 
-//actions
-const USERS = "users";
-const TASKS = "tasks";
+const logEnhancer = (createStore) => (reducer, initialState, enhance) => {
+  const logReducer = (state, action) => {
+    // Ignore Redux internal actions
+    if (action.type.startsWith("@@redux/")) {
+      return reducer(state, action);
+    }
 
-const userAction = (id, name) => ({
-  type: USERS,
-  payload: { id: id, name: name },
-});
-const taskAction = (task) => ({
-  type: TASKS,
-  payload: { title: task },
-});
+    console.log("old state", state, "action: ", action);
+    const newState = reducer(state + 1, action);
+    console.log("new state", newState, "action: ", action);
 
-//reducers
-const userReducer = (users = initialState.users, action) => {
-  if (action.type === USERS) {
-    return [...users, action.payload];
-  }
+    return newState;
+  };
 
-  return users;
+  return createStore(logReducer, initialState, enhance);
 };
-const taskReducer = (tasks = initialState.tasks, action) => {
-  if (action.type === TASKS) {
-    return [...tasks, action.payload];
-  }
-  return tasks;
-};
-
-//combinator
-const combineReducer = combineReducers({
-  users: userReducer,
-  tasks: taskReducer,
-});
-
-//store
-const store = createStore(combineReducer);
-
-//subscribe
-const subscriber = () => {
-  console.log("Subscribe", store.getState());
-};
-store.subscribe(subscriber);
-
-//action invoke
-store.dispatch(userAction(3, "crome"));
-store.dispatch(taskAction("nothing here"));
-
-//actionbinder
-const actionBinder = bindActionCreators(
-  { userAction, taskAction },
-  store.dispatch
-);
-actionBinder.userAction(4, "zen");
-actionBinder.taskAction("actionBinders");
+const store = createStore(reducer, 1, compose(logEnhancer));
+console.log("trigger");
+store.dispatch({ type: "test" });
+console.log(store.getState());
